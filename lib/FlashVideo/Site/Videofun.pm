@@ -33,6 +33,15 @@ sub find_video {
   # URL ends with filename
   $name = $url;
   $name =~ s/.*\/([^\/]+)\?.*/$1/;
+
+  $browser->head($url);
+  my $count = 0;
+  my $count_max = 3;
+  while (($browser->response->is_redirect()) || ($count > $count_max) ) {
+    $url = $browser->response->header('Location');
+    $browser->head($url);
+    $count += 1;
+  }
   return $url, title_to_filename($name);
 }
 
